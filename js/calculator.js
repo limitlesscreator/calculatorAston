@@ -38,16 +38,18 @@ class Calculator {
                 computation = prev - current; break
             case '*':
                 computation = prev * current; break
-            case '/':
-                computation = prev / current; break
             case '÷':
                 computation = prev / current; break
+            case '%':
+                computation = prev * ((current / prev )* 100); break // bug here
             default:
                 return
         }
+        this.currentOperand = computation
+        this.operation = undefined
+        this.previousOperand = ''
     }
 
-    // 29:39 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     updateDisplay(){
         this.currentOperandTextElement.innerText = this.currentOperand
         this.previousOperandTextElement.innerHTML = this.previousOperand
@@ -82,7 +84,13 @@ buttonsOfOperation.forEach(btn => {
     })
 })
 
+clearButton.addEventListener('click', () => {
+    calculator.clearAll()
+    calculator.updateDisplay()
+})
+
 equalsButton.addEventListener('click', btn => {
     calculator.compute()
     calculator.updateDisplay()
 })
+
