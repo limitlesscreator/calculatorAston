@@ -8,8 +8,8 @@ class Calculator {
         if (number === '.' && this.currentOperand.includes('.')) return
         this.currentOperand = String(this.currentOperand + number)
     }
-    deleteNumber(){
-
+    deleteCurrentNumber(){
+        this.currentOperand = this.currentOperand.toString().slice(0, -1)
     }
     clearAll(){
         this.operation = null
@@ -17,20 +17,71 @@ class Calculator {
         this.previousOperand = ''
     }
     whichOperation(operation){
+
         if (this.currentOperand === '') return // if empty then nothing, solving double click bug on sign +
 
         if (this.previousOperand !== ''){
-            this.compute()
+            if (operation !== '%'){
+                this.compute()
+            }
+            else if(operation === '%') {
+                console.log('percentage!')
+                this.prevOperation = this.operation
+                this.operation = '%'
+                this.compute()
+                return;
+            }
         }
         this.operation = operation
         this.previousOperand = this.currentOperand
         this.currentOperand = ''
     }
+    countPercentage(operator, current, prev) { // witch presentage
+            switch (operator) {
+                case '-':
+                    if (String(prev).length < 2){
+                        return current - (current * `0.0${prev}`)
+                    }
+                    return current - (current * `0.${prev}`); break;
+                case '+':
+                    if (String(prev).length < 2){
+                        return current + (current * `0.0${prev}`)
+                    }
+                    return current + (current * `0.${prev}`); break;
+                case '÷':
+                    if (String(prev).length < 2){
+                        console.log('1')
+                        return current * (current / `0.0${prev}` / current)
+                    }
+                    console.log('2')
+                    return current * (1 / `0.${prev}`); break;
+                case '*':
+                    if (String(prev).length < 2){
+                        return current * (current * `0.0${prev}` / current)
+                    }
+                    return current * (current * `0.${prev}`) / current; break;
+            }
+    }
     compute(){
         let computation // our result
         const prev = parseFloat(this.previousOperand)
         const current = parseFloat(this.currentOperand)
+        // our percentage prev operation
+        console.log(this.operation)
+
+        if (this.operation === '%'){
+            console.log('win')
+            // computation = 1000
+
+            computation = this.countPercentage(this.prevOperation,prev,current);
+            this.currentOperand = computation
+            this.operation = undefined
+            this.previousOperand = ''
+            return
+        }
+
         if (isNaN(prev) || isNaN(current)) return
+
         switch (this.operation) {
             case '+':
                 computation = prev + current; break
@@ -40,8 +91,6 @@ class Calculator {
                 computation = prev * current; break
             case '÷':
                 computation = prev / current; break
-            case '%':
-                computation = prev * ((current / prev )* 100); break // bug here
             default:
                 return
         }
@@ -52,7 +101,12 @@ class Calculator {
 
     updateDisplay(){
         this.currentOperandTextElement.innerText = this.currentOperand
-        this.previousOperandTextElement.innerHTML = this.previousOperand
+        if (this.operation != null){
+                this.previousOperandTextElement.innerText = `${this.previousOperand} ${this.operation}`
+        }
+        else {
+            this.previousOperandTextElement.innerText = ''
+        }
     }
 }
 
@@ -69,9 +123,6 @@ const calculator = new Calculator(previousOperandTextElement, currentOperandText
 buttonsOfNumbers.forEach(btn => {
     btn.addEventListener('click', () => {
         calculator.addNumber(btn.innerHTML)
-
-        console.log(btn.innerText)
-
         calculator.updateDisplay()
     })
 })
@@ -79,7 +130,6 @@ buttonsOfNumbers.forEach(btn => {
 buttonsOfOperation.forEach(btn => {
     btn.addEventListener('click', () => {
         calculator.whichOperation(btn.innerText)
-        console.log(btn.innerText)
         calculator.updateDisplay()
     })
 })
@@ -94,3 +144,7 @@ equalsButton.addEventListener('click', btn => {
     calculator.updateDisplay()
 })
 
+deleteButton.addEventListener('click',() => {
+    calculator.deleteCurrentNumber()
+    calculator.updateDisplay()
+})
