@@ -5,8 +5,8 @@ class Calculator {
         this.clearAll()
     }
     addNumber(number){
-        if (number === '.' && this.currentOperand.includes('.')) return
-        this.currentOperand = String(this.currentOperand + number)
+        if (number === '.' && this.currentOperand.includes('.') || this.currentOperand.length > 7) return
+        this.currentOperand = String((this.currentOperand + number))
     }
     deleteCurrentNumber(){
         this.currentOperand = this.currentOperand.toString().slice(0, -1)
@@ -32,6 +32,7 @@ class Calculator {
                 return;
             }
         }
+
         this.operation = operation
         this.previousOperand = this.currentOperand
         this.currentOperand = ''
@@ -50,7 +51,6 @@ class Calculator {
                     return current + (current * `0.${prev}`); break;
                 case '÷':
                     if (String(prev).length < 2){
-                        console.log('1')
                         return current * (current / `0.0${prev}` / current)
                     }
                     console.log('2')
@@ -84,15 +84,21 @@ class Calculator {
 
         switch (this.operation) {
             case '+':
-                computation = prev + current; break
+                computation = Number((prev + current).toFixed(2)); break
             case '-':
-                computation = prev - current; break
+                computation = Number((prev - current).toFixed(2)); break
             case '*':
-                computation = prev * current; break
+                computation = Number((prev * current).toFixed(2)); break
             case '÷':
-                computation = prev / current; break
+                computation = Number((prev / current).toFixed(7)); break
             default:
                 return
+        }
+        let checkIsEverythingGood = String(computation).replace(/[.]/gi,'')
+        if (checkIsEverythingGood.length > 8 ){
+            this.currentOperand = 'Error'
+
+            return
         }
         this.currentOperand = computation
         this.operation = undefined
@@ -145,6 +151,11 @@ equalsButton.addEventListener('click', btn => {
 })
 
 deleteButton.addEventListener('click',() => {
+    if (currentOperandTextElement.innerHTML === 'Error'){
+        calculator.currentOperand = ''
+        calculator.updateDisplay()
+        return
+    }
     calculator.deleteCurrentNumber()
     calculator.updateDisplay()
 })
