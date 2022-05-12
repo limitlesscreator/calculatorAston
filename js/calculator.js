@@ -116,6 +116,7 @@ class Calculator {
     }
 }
 
+const timer = document.querySelector('#timer').innerHTML = Math.floor(new Date().getHours()) + ':' + ('0' + Math.floor(new Date().getMinutes())).slice(-2)
 const buttonsOfNumbers = document.querySelectorAll('[data-number]')
 const buttonsOfOperation = document.querySelectorAll('[data-operation]')
 const equalsButton = document.querySelector('[data-equals]')
@@ -126,6 +127,10 @@ const currentOperandTextElement = document.querySelector('[data-current-operand]
 
 const calculator = new Calculator(previousOperandTextElement, currentOperandTextElement)
 
+
+setInterval(() => {
+    timer.innerHTML =  Math.floor(new Date().getHours()) + ':' + ('0' + Math.floor(new Date().getMinutes()))
+},60000)
 buttonsOfNumbers.forEach(btn => {
     btn.addEventListener('click', () => {
         calculator.addNumber(btn.innerHTML)
