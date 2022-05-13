@@ -5,8 +5,12 @@ class Calculator {
         this.clearAll()
     }
     addNumber(number){
-        if (number === '.' && this.currentOperand.includes('.') || this.currentOperand.length > 7) return
+        if (number === '.' && this.currentOperand.includes('.') || this.currentOperand.length > 7 ) return
+
         this.currentOperand = String((this.currentOperand + number))
+        if(this.currentOperand[0] === '0' && this.currentOperand[1] === '0'){
+            this.currentOperand = this.currentOperand.slice(-1)
+        }
     }
     deleteCurrentNumber(){
         this.currentOperand = this.currentOperand.toString().slice(0, -1)
@@ -53,7 +57,6 @@ class Calculator {
                     if (String(prev).length < 2){
                         return current * (current / `0.0${prev}` / current)
                     }
-                    console.log('2')
                     return current * (1 / `0.${prev}`); break;
                 case '*':
                     if (String(prev).length < 2){
